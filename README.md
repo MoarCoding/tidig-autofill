@@ -20,13 +20,13 @@ Bookmarklet that automatically enters worked hours into consid's time reporting 
 ## Example timesheet:
   ```
   [defs]
-    projectTemplateName=TELIA       (Exact match for name of tidig's tidmall for project, including casing)
-    sickTemplateName=SJUK           (Exact match for name of tidig's tidmall for sick leave, including casing)
-    vabTemplateName=VAB             (Exact match for name of tidig's tidmall for taking care of your sick kids, including casing)
-    vacationTemplateName=SEMESTER   (Exact match for name of tidig's tidmall for vacations, including casing)
-    sickCode=Sjuk                   (What you write when you're sick. Does not match casing)
-    vabCode=VAB                     (What you write when you're taking care of your sick kids. Does not match casing)
-    vacationCode=Semester           (What you write when you're on vacation. Does not match casing)
+  projectTemplateName=TELIA       (Exact match for name of tidig's tidmall for project, including casing)
+  sickTemplateName=SJUK           (Exact match for name of tidig's tidmall for sick leave, including casing)
+  vabTemplateName=VAB             (Exact match for name of tidig's tidmall for taking care of your sick kids, including casing)
+  vacationTemplateName=SEMESTER   (Exact match for name of tidig's tidmall for vacations, including casing)
+  sickCode=Sjuk                   (What you write when you're sick. Does not match casing)
+  vabCode=VAB                     (What you write when you're taking care of your sick kids. Does not match casing)
+  vacationCode=Semester           (What you write when you're on vacation. Does not match casing)
   [/defs]
   
   
