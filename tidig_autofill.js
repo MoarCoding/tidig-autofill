@@ -143,7 +143,7 @@ javascript: (() => {
       return;
     }
 
-    const timeout = 3000;
+    const timeout = 5000;
     const current = dayTotals[index];
     const dayNumber = parseInt(
       current.currentDate.match(/[0-9]{2}$/)[0]
