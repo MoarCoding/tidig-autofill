@@ -138,8 +138,9 @@ javascript: (() => {
   const roundTotalWorkedHours = total => Math.round(total * 2) / 2;
 
   const enterTimes = (dayTotals, index) => {
-    if (index >= dayTotals.length) {
-      $floater.remove();
+    $floater.remove();
+    
+    if (index >= dayTotals.length) {  
       return;
     }
 
