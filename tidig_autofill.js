@@ -76,13 +76,8 @@ javascript: (() => {
           const word = match[1];
           const amount = parseFloat(match[2].replace(',', '.'), 10);
 
-          if (!projects[word]) {
-            projects[word] = amount;
-            projectsOfDay[word] = amount;
-          } else {
-            projects[word] += amount;
-            projectsOfDay[word] += amount;
-          }
+          projects[word] = (projects[word] ? projects[word] : 0) + amount; 
+					projectsOfDay[word] = amount;
         } else {
           currentProject = currentRow;
 
