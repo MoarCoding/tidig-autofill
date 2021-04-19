@@ -13,16 +13,9 @@ javascript: (() => {
 
   $('#monthNavigation').click();
 
-  const defsTag = 'defs';
-  const defs = {
-    projectTemplateName: '',
-    sickTemplateName: '',
-    vabTemplateName: '',
-    vacationTemplateName: '',
-    sickCode: '',
-    vabCode: '',
-    vacationCode: ''
-  };
+  const defsTagname = 'defs';
+  const defs = {};
+  const defaultProjectKey = 'default';
 
   function parsePxData() {
     var rows = document.getElementById('input').value.split('\n'),
@@ -37,15 +30,20 @@ javascript: (() => {
     for (let i = 0; i < rows.length; i++) {
       let currentRow = rows[i].trim();
 
-      if (currentRow === `[${defsTag}]`) {
+      if (currentRow === `[${defsTagname}]`) {
         readingDefs = true;
         continue;
-      } else if (currentRow === `[/${defsTag}]`) {
+      } else if (currentRow === `[/${defsTagname}]`) {
         readingDefs = false;
         continue;
       } else if (readingDefs) {
-        const capturedGroups = currentRow.match(/(.+)=(.+)/);
-        defs[capturedGroups[1]] = capturedGroups[2];
+        const splitValues = currentRow.split(' | ');
+
+        if (splitValues.length === 1) {
+          defs[defaultProjectKey] = splitValues[0];
+        } else {
+          defs[splitValues[0].toLowerCase()] = splitValues[1];
+        }
         continue;
       }
 
@@ -76,8 +74,8 @@ javascript: (() => {
           const word = match[1];
           const amount = parseFloat(match[2].replace(',', '.'), 10);
 
-          projects[word] = (projects[word] ? projects[word] : 0) + amount; 
-					projectsOfDay[word] = amount;
+          projects[word] = (projects[word] ? projects[word] : 0) + amount;
+          projectsOfDay[word] = amount;
         } else {
           currentProject = currentRow;
 
@@ -137,70 +135,81 @@ javascript: (() => {
 
   const roundTotalWorkedHours = total => Math.round(total * 2) / 2;
 
-  const enterTimes = (dayTotals, index) => {
+  const enterTimes = (dayTotals, dayTotalsIndex) => {
     $floater.remove();
-    
-    if (index >= dayTotals.length) {  
+
+    if (dayTotalsIndex >= dayTotals.length) {
       return;
     }
 
     const timeout = 5000;
-    const current = dayTotals[index];
+    const current = dayTotals[dayTotalsIndex];
     const dayNumber = parseInt(
       current.currentDate.match(/[0-9]{2}$/)[0]
     ).toString();
+    const totalsOfDayPerProject = {};
+    let hasEnteredTime = false;
 
-    let quickSelectText;
-    const currentCode = Object.entries(
-      current.projectsOfDay
-    )[0][0].toLowerCase();
+    Object.entries(current.projectsOfDay).forEach(entry => {
+      const key = entry[0];
+      const defsKey = defs.hasOwnProperty(key.toLowerCase())
+        ? key.toLowerCase()
+        : defaultProjectKey;
 
-    switch (currentCode) {
-      case defs.sickCode.toLowerCase():
-        quickSelectText = defs.sickTemplateName;
-        break;
-      case defs.vabCode.toLowerCase():
-        quickSelectText = defs.vabTemplateName;
-        break;
-      case defs.vacationCode.toLowerCase():
-        quickSelectText = defs.vacationTemplateName;
-        break;
-      default:
-        quickSelectText = defs.projectTemplateName;
-    }
+      if (!totalsOfDayPerProject[defsKey]) {
+        totalsOfDayPerProject[defsKey] = current.projectsOfDay[key];
+      } else {
+        totalsOfDayPerProject[defsKey] += current.projectsOfDay[key];
+      }
+    });
 
-    const totalWorkedHours = Object.entries(current.projectsOfDay).reduce(
-      (acc, curr) => acc + parseFloat(curr[1]),
-      0
-    );
+    const entries = Object.entries(totalsOfDayPerProject);
 
-    const $date = $('.fc-day-number').filter(
-      (i, el) => $(el).text() === dayNumber
-    );
-
-    const $button = $date
-      .closest('thead')
-      .siblings('tbody')
-      .find(
-        `tr td:nth-child(${
-          $date.closest('td').prevAll().length + 1
-        }) a.fullcalendar-new-row`
-      )
-      .click();
-
-    setTimeout(() => {
-      $('.text-success')
-        .filter((i, el) => $(el).text() === quickSelectText)
-        .click();
+    entries.forEach((entry, entriesIndex) => {
+      const defsKey = entry[0];
 
       setTimeout(() => {
-        $('#timeRowEditAmount').val(roundTotalWorkedHours(totalWorkedHours));
-        $('#timeRowEditSubmit').click();
+        const $date = $(`.fc-day-top[data-date="${current.currentDate}"]`);
+        let buttonSelector;
+
+        if (!hasEnteredTime) {
+          buttonSelector = `tr td:nth-child(${
+            $date.closest('td').prevAll().length + 1
+          }) a.fullcalendar-new-row`;
+        } else {
+          buttonSelector = `tr:last-child td.fc-event-container:last-child a.fullcalendar-new-row`;
+        }
+
+        hasEnteredTime = true;
+
+        const $button = $date
+          .closest('thead')
+          .siblings('tbody')
+          .find(buttonSelector)
+          .click();
 
         setTimeout(() => {
-          enterTimes(dayTotals, ++index);
+          $('.text-success')
+            .filter((i, el) => $(el).text() === defs[defsKey])
+            .click();
+
+          setTimeout(() => {
+            $('#timeRowEditAmount').val(roundTotalWorkedHours(entry[1]));
+
+            if (entry[0].toLowerCase() === 'medarbetarsamtal') {
+              $('#timeRowEditDescription').val('Medarbetarsamtal');
+            }
+
+            $('#timeRowEditSubmit').click();
+
+            if (entriesIndex === entries.length - 1) {
+              setTimeout(() => {
+                enterTimes(dayTotals, ++dayTotalsIndex);
+              }, timeout);
+            }
+          }, timeout);
         }, timeout);
-      }, timeout);
-    }, timeout);
+      }, entriesIndex * (timeout * 3) + timeout);
+    });
   };
 })();
