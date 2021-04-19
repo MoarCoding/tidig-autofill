@@ -12,21 +12,19 @@ Bookmarklet that automatically enters worked hours into consid's time reporting 
   - There are several timeouts since the script has to wait for clicks etc so go make a cup of tea while it runs
 
 ## Limitations:
-  - Only supports one concurrent work project
-  - Reports time for work project OR sick leave, vab etc on any given day
-  - Requires one precreated tidmall in tidig for the work project and one for each of sick leave, vab etc 
+  - Requires one precreated tidmall in tidig for each item 
   - A detailed specification of the reported time will be logged to the console containing details for each day
+  - Times can not span multiple days
+  - Currently only Medarbetarsamtal will fill in the comment field automatically. Working on fixing this.
 
 ## Example timesheet:
   ```
   [defs]
-  projectTemplateName=TELIA       (Exact match for name of tidig's tidmall for project, including casing)
-  sickTemplateName=SJUK           (Exact match for name of tidig's tidmall for sick leave, including casing)
-  vabTemplateName=VAB             (Exact match for name of tidig's tidmall for taking care of your sick kids, including casing)
-  vacationTemplateName=SEMESTER   (Exact match for name of tidig's tidmall for vacations, including casing)
-  sickCode=Sjuk                   (What you write when you're sick. Does not match casing)
-  vabCode=VAB                     (What you write when you're taking care of your sick kids. Does not match casing)
-  vacationCode=Semester           (What you write when you're on vacation. Does not match casing)
+  TELIA                     // time template used when entered task does not match any of the others
+  Sjuk | SJUK               // What you write under a date (casing unimportant) | Name of tidig time template (casing important)
+  VAB | VAB
+  Semester | SEMESTER
+  Medarbetarsamtal | MAS
   [/defs]
   
   
@@ -36,6 +34,19 @@ Bookmarklet that automatically enters worked hours into consid's time reporting 
   14:12-15:00
   
   Name of another project task 2h   (or by specifying number of hours) 
+  
+  
+  2021-04-09
+  Atlas P1-05873-00057 // default task
+  08:29-10:55
+  11:41-13:30
+  14:19-15:50
+
+  IoT Platform P1-05873-00040 // default task
+  11:00-11:26
+
+  Medarbetarsamtal
+  13:30-14:19
   
   
   2021-03-02
