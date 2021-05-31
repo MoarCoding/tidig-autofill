@@ -50,7 +50,7 @@ javascript: (() => {
       if (currentRow.match(/\d{4}-\d{2}-\d{2}/gi)) {
         /* date row */
         if (currentDate) {
-          console.log(currentDate, projectsOfDay);
+          console.log(`currentDate=${currentDate}`, `projectsOfDay=${projectsOfDay}`);
           dayTotals.push({ currentDate, projectsOfDay });
         }
 
@@ -96,11 +96,11 @@ javascript: (() => {
     }
 
     if (currentDate) {
-      console.log(currentDate, projectsOfDay);
+      console.log(`currentDate=${currentDate}`, `projectsOfDay=${projectsOfDay}`);
       dayTotals.push({ currentDate, projectsOfDay });
     }
 
-    console.log(projects);
+    console.log(`projects=${projects}`);
 
     enterTimes(dayTotals, 0);
   }
